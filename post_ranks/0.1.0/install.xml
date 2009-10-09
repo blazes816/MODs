@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="modx.prosilver.en.xsl"?>
+<!--For security purposes, please check: http://www.phpbb.com/mods/ for the latest version of this MOD. Although MODs are checked before being allowed in the MODs Database there is no guarantee that there are no security problems within the MOD. No support will be given for MODs not found within the MODs Database which can be found at http://www.phpbb.com/mods/-->
+<mod xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.phpbb.com/mods/xml/modx-1.2.0.xsd">
+    <header>
+        <license>http://opensource.org/licenses/gpl-license.php GNU General Public License v2</license>
+        <title lang="en">Post Ranks</title>
+        <description lang="en">Allows users to vote a post up or down.  Admins can also set forum-wide to show topics via highest ranking.</description>
+        <author-notes lang="en" />
+        <author-group>
+            <author>
+                <realname>Tyler Smith</realname>
+                <username>blazes816</username>
+                <homepage>http://tylersmith.me</homepage>
+            </author>
+        </author-group>
+        <mod-version>0.1.0</mod-version>
+        <installation>
+            <level>easy</level>
+            <time>300</time>
+            <target-version>3.0.6</target-version>
+        </installation>
+        <history/>
+    </header>
+    <action-group>
+        <open src="includes/constants.php">
+            <edit>
+                <find><![CDATA[define('ZEBRA_TABLE',				$table_prefix . 'zebra');]]></find>
+                <action type="after-add"><![CDATA[define('VOTES_TABLE',                           $table_prefix . 'votes');]]></action>
+            </edit>
+        </open>
+        <open src="viewtopic.php">
+
+        </open>
+        <open src="posting.php">
+            <edit>
+                <find><![CDATA[case 'post':]]></find>
+                <action type="before-add"><![CDATA[
+                    case 'vote':
+                        $sql = 'SELECT up FROM ' . VOTES_TABLE . ' WHERE user_id = ' . $user->data['user_id'] . ' AND post_id = ' . $post_id;
+                        $db->sql_query($sql);
+                        $voted_already = $db->sql_affectedrows();
+                        if($voted_already)
+                        {
+                            $sql = 'DELETE FROM ' . VOTES_TABLE . ' WHERE user_id = ' . $user->data['user_id'] . ' AND post_id = ' . $post_id;
+                        }
+                        else
+                        {
+                            $sql = 'INSERT INTO ' . VOTES_TABLE . '(user_id, post_id, up) VALUES ('.$user->data['user_id'].', '.$post_id.', ' . $_GET['vote'] . ');';
+                        }
+                        $db->sql_query($sql);
+                        $redirect = ($post_id) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", $f . 'p=' . $post_id) . '#p' . $post_id : (($topic_id) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", $f . 't=' . $topic_id) : (($forum_id) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) : append_sid("{$phpbb_root_path}index.$phpEx")));
+                        redirect($redirect);
+                        unset($sql);
+                    break;
+                ]]></action>
+            </edit>
+        </open>
+        <sql>
+            <!--ADD STYLE_IMAGESET_DATA_TABLE INSERT CODE FOR icon_rate_good/bad-->
+        </sql>
+    </action-group>
+</mod>
+viewtopic.php
+styles/prosilver/template/viewtopic_body.html

@@ -12,7 +12,7 @@
 			<author>
 				<realname>Tyler Smith</realname>
 				<username>blazes816</username>
-				<homepage>http://www.blazes816.com</homepage>
+				<homepage>http://tylersmith.me</homepage>
 			</author>
 		</author-group>
 		<mod-version>0.4.0</mod-version>
@@ -75,13 +75,12 @@
 	{
 		add_log('search', 'LOG_SEARCH', $keywords);
 	}</action>
-				<inline-edit/>
 			</edit>
 		</open>
 		<diy-instructions lang="en">The last thing that must be done is to create an ACP module.  After logging into the ACP, go to the System tab.  Then go to 'Administration Control Panel' under 'Module Management'.
 Click on 'Maintenance'.
 Click on 'Forum logs'.
-Type 'Search log' into the Creat new module text box.
+Type 'Search log' into the Create new module text box.
 Change Module type to 'Module'.
 Change Module enabled to 'yes'.
 Change Choose module to 'Logging [acp_logs]'
