@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="modx.prosilver.en.xsl"?>
+<!--For security purposes, please check: http://www.phpbb.com/mods/ for the latest version of this MOD. Although MODs are checked before being allowed in the MODs Database there is no guarantee that there are no security problems within the MOD. No support will be given for MODs not found within the MODs Database which can be found at http://www.phpbb.com/mods/-->
+<mod xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.phpbb.com/mods/xml/modx-1.2.0.xsd">
+    <header>
+        <license>http://opensource.org/licenses/gpl-license.php GNU General Public License v2</license>
+        <title lang="en">Search Log Upgrade (0.3.0 - 0.4.0)</title>
+        <description lang="en">Upgrade Search Log from version 0.3.0 to version 0.4.0</description>
+        <author-group>
+            <author>
+                <realname>Tyler Smith</realname>
+                <username>blazes816</username>
+                <homepage>http://tylersmith.me</homepage>
+            </author>
+        </author-group>
+        <mod-version>0.1.0</mod-version>
+        <installation>
+            <level>easy</level>
+            <time>300</time>
+            <target-version>3.0.2</target-version>
+        </installation>
+        <history/>
+    </header>
+    <action-group>
+        <open src="/language/en/mcp.php">
+            <edit>
+                <find><![CDATA[MCP_LOGS_TOPIC_VIEW'			=> 'Topic logs',]]>
+                </find>
+                <action type="after-add"><![CDATA['MCP_LOGS_SEARCH_VIEW'                  => 'Search logs',]]>
+                </action>
+            </edit>
+        </open>
+
+        <open src="/includes/mcp/info/mcp_logs.php">
+            <edit>
+                <find><![CDATA['topic_logs'	=> array('title' => 'MCP_LOGS_TOPIC_VIEW', 'auth' => 'acl_m_,$id', 'cat' => array('MCP_LOGS')),]]>
+                </find>
+                <action type="after-add"><![CDATA['search_logs'	=> array('title' => 'MCP_LOGS_SEARCH_VIEW', 'auth' => 'acl_m_,$id', 'cat' => array('MCP_LOGS')),]]>
+                </action>
+            </edit>
+        </open>
+
+        <open src="/includes/mcp/mcp_logs.php">
+            <edit>
+                <find><![CDATA[$forum_id = $topic_id = 0;]]>
+                </find>
+                <action type="after-add"><![CDATA[$log_mode = 'mod';]]>
+                </action>
+            </edit>
+            <edit>
+                <find><![CDATA[
+                case 'front':
+                break;]]>
+                </find>
+                <action type="after-add">
+                <![CDATA[
+                        case 'search_logs':
+                            $log_mode = 'search';
+                        break;
+                ]]>
+                </action>
+                <find><![CDATA[view_log('mod', $log_data, $log_count, $config['topics_per_page'], $start, $forum_list, $topic_id, 0, $sql_where, $sql_sort, $keywords);]]>
+                </find>
+                <inline-edit>
+                    <inline-find><![CDATA['mod']]>
+                    </inline-find>
+                    <inline-action type="replace-with"><![CDATA[$log_mode]]>
+                    </inline-action>
+                </inline-edit>
+            </edit>
+        </open>
+
+        <diy-instructions><![CDATA[
+For MCP integration do this after logging into the ACP:
+Go to the System tab
+Then go to 'Moderator Control Panel' under 'Module Management'
+Click on 'Moderator logs';
+Type 'Search logs' into the Create new module text box and click the button
+Change Module type to 'Module'.
+Change Module enabled to 'yes'.
+Change Choose module to 'Moderator log [mcp_logs]'
+Change Choose module mode to 'Search Logs'.
+Click Submit.]]>
+        </diy-instructions>
+    </action-group>
+</mod>
